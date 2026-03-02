@@ -1,5 +1,34 @@
 # Fast MCP 🚀
 
+## Tern Fork
+
+This is Tern's fork of [yjacquin/fast-mcp](https://github.com/yjacquin/fast-mcp), maintained on the `tern` branch and published to `gems.tern.travel` as `fast-mcp 1.5.0.tern.1`.
+
+### Why we forked
+
+The upstream gem (v1.6.0) only supports the legacy SSE transport, which requires session affinity — incompatible with Heroku's multi-dyno setup. This fork is based on [Chowly's `checkpoint/6-9-25` branch](https://github.com/Chowly/fast-mcp/tree/checkpoint/6-9-25) which adds Streamable HTTP support (MCP 2025-06-18 spec), solving the multi-dyno problem without sticky sessions.
+
+### What we changed on top of Chowly's branch
+
+- Cherry-picked quorak's [resource authorization PR #169](https://github.com/yjacquin/fast-mcp/pull/169)
+- Bumped version to `1.5.0.tern.1` for Gemfury publishing
+
+### When to abandon this fork
+
+Once upstream ships Streamable HTTP support (tracked in [PR #27](https://github.com/yjacquin/fast-mcp/pull/27) and [PR #117](https://github.com/yjacquin/fast-mcp/pull/117)), we can drop this fork and pin to the official gem.
+
+### Pending upstream changes not yet pulled in
+
+There are 16 upstream commits on `yjacquin/fast-mcp` main that we haven't merged. The notable one is a significant rewrite of `lib/mcp/tool.rb` (Drop schema compiler to use Dry's — [#152](https://github.com/yjacquin/fast-mcp/pull/152)). The rest are minor housekeeping (CI, docs, rack compat). Hold off until production is stable and we can test the tool.rb changes against our tools.
+
+To check what's new upstream:
+```bash
+git fetch upstream
+git log tern..upstream/main
+```
+
+---
+
 <div align="center">
   <h3>Connect AI models to your Ruby applications with ease</h3>
   <p>No complex protocols, no integration headaches, no compatibility issues – just beautiful, expressive Ruby code.</p>
