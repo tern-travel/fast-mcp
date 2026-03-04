@@ -291,7 +291,7 @@ module FastMcp
       def handle_get_request(request, env)
         # Validate Accept header for SSE
         accept_header = request.get_header('HTTP_ACCEPT') || ''
-        unless accept_header.include?(SSE_CONTENT_TYPE)
+        unless accept_header.include?('*/*') || accept_header.include?(SSE_CONTENT_TYPE)
           error_msg = 'Bad Request: Accept header must include text/event-stream'
           return [400, { 'Content-Type' => JSON_CONTENT_TYPE },
                   [JSON.generate(create_error_response(-32_600, error_msg))]]
@@ -305,7 +305,8 @@ module FastMcp
       def handle_post_request(request, server)
         # Validate Accept header
         accept_header = request.get_header('HTTP_ACCEPT') || ''
-        valid_accept = REQUIRED_ACCEPT_HEADERS.any? { |header| accept_header.include?(header) }
+        valid_accept = accept_header.include?('*/*') ||
+                       REQUIRED_ACCEPT_HEADERS.any? { |header| accept_header.include?(header) }
 
         unless valid_accept
           error_msg = 'Bad Request: Accept header must include application/json and text/event-stream'

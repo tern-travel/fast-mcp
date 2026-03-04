@@ -93,8 +93,23 @@ RSpec.describe FastMcp::Transports::StreamableHttpTransport do
               'REMOTE_ADDR' => '127.0.0.1'
             }
             status, headers, _body = transport.call(env)
-            
+
             # Without rack.hijack support, it should return basic SSE response
+            expect(status).to eq(200)
+            expect(headers['Content-Type']).to include('text/event-stream')
+          end
+        end
+
+        context 'with wildcard Accept header' do
+          it 'accepts */* as valid' do
+            env = {
+              'REQUEST_METHOD' => 'GET',
+              'PATH_INFO' => '/mcp',
+              'HTTP_ACCEPT' => '*/*',
+              'REMOTE_ADDR' => '127.0.0.1'
+            }
+            status, headers, _body = transport.call(env)
+
             expect(status).to eq(200)
             expect(headers['Content-Type']).to include('text/event-stream')
           end
@@ -127,6 +142,21 @@ RSpec.describe FastMcp::Transports::StreamableHttpTransport do
               'REQUEST_METHOD' => 'POST',
               'PATH_INFO' => '/mcp',
               'HTTP_ACCEPT' => 'application/json, text/event-stream',
+              'CONTENT_TYPE' => 'application/json',
+              'REMOTE_ADDR' => '127.0.0.1',
+              'rack.input' => StringIO.new(request_body)
+            }
+            status, headers, _body = transport.call(env)
+
+            expect(status).to eq(200)
+            expect(headers['Content-Type']).to include('application/json')
+          end
+
+          it 'accepts */* as valid' do
+            env = {
+              'REQUEST_METHOD' => 'POST',
+              'PATH_INFO' => '/mcp',
+              'HTTP_ACCEPT' => '*/*',
               'CONTENT_TYPE' => 'application/json',
               'REMOTE_ADDR' => '127.0.0.1',
               'rack.input' => StringIO.new(request_body)
