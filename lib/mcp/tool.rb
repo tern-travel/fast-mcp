@@ -566,9 +566,12 @@ module FastMcp
         set_op = key_op.rule.rules.find { |r| r.is_a?(Dry::Logic::Operations::Set) }
         process_set_operation(set_op, nested_rules) if set_op
 
-        # Also look for direct predicates
+        # Also look for direct predicates. `hash?`/`filled?` are constraints on
+        # the hash itself, not evidence of a named child — registering on them
+        # makes a bare `filled(:hash)` add the field's own key as a phantom
+        # nested property (a self-nested schema).
         key_op.rule.rules.each do |r|
-          if r.respond_to?(:name) && r.name != :hash?
+          if r.respond_to?(:name) && ![:hash?, :filled?].include?(r.name)
             nested_key = key_op.path
             nested_rules[nested_key] = key_op.rule
           end
