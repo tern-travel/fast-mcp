@@ -53,6 +53,23 @@ RSpec.describe FastMcp::SchemaCompiler do
       end
     end
 
+    context 'with a free-form hash field (filled(:hash))' do
+      let(:schema) do
+        Dry::Schema.JSON do
+          required(:files).filled(:hash).description('map of path to contents')
+        end
+      end
+
+      it 'compiles to a plain object without a phantom self-nested property' do
+        result = compiler.process(schema)
+
+        expect(result[:properties][:files]).to eq(
+          type: 'object',
+          description: 'map of path to contents'
+        )
+      end
+    end
+
     context 'with nested schema' do
       let(:schema) do
         Dry::Schema.JSON do

@@ -15,6 +15,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Tool annotations support for providing hints about tool behavior (readOnlyHint, destructiveHint, etc.)
 
+## [1.5.0.tern.3]
+### Fixed
+- `SchemaCompiler` no longer compiles a free-form `filled(:hash)` field into a self-nested schema (`{type: object, properties: {<field>: {type: object}}, required: [<field>]}`). The `filled?` predicate on the hash itself was mistaken for a named child, so a tool argument like `required(:files).filled(:hash)` told the model to wrap its value under a `files` key. `filled(:hash)` and `value(:hash)` now both compile to a plain `{type: object}`.
+
 ## [1.5.0] - 2025-06-01
 ### Added
 - Handle filtering tools and resources [#85 @yjacquin](https://github.com/yjacquin/fast-mcp/pull/85)
